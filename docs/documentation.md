@@ -1,3 +1,5 @@
+You can copy this entire block and paste it directly into your documentation.md file:
+
 Markdown
 # Instamart: Highly Available 3-Tier Enterprise DevSecOps Architecture
 
@@ -17,6 +19,7 @@ The goal of this project is to implement an automated, end-to-end DevSecOps CI/C
 * **Data Tier:** An **Amazon RDS PostgreSQL** cluster resides in an isolated Data Subnet Group, accessible only via stateful Security Group rules originating from the compute tier.
 
 ### Diagram
+
 ```mermaid
 flowchart TB
     User((Web User))
@@ -52,8 +55,7 @@ flowchart TB
     ALB == "3. Route Traffic" ==> Backend
     Backend == "4. Read/Write Data" ==> Database
     ECR -. "5. Pull Image" .-> Backend
-
-``` ##Technologies Used
+Technologies Used
 Cloud Provider: AWS (VPC, ALB, EC2, S3, RDS, EKS, IAM, ECR)
 
 Infrastructure as Code: Terraform
@@ -92,15 +94,14 @@ Git & Node.js/Maven (For local development/testing)
 An active Jenkins Server with Docker, SonarQube, and AWS credentials configured.
 
 Setup Instructions
-Clone the Repository:
-
+1. Clone the Repository
 Bash
 git clone [https://github.com/your-username/instamart.git](https://github.com/your-username/instamart.git)
 cd instamart
-Configure Environment Variables:
+2. Configure Environment Variables
 Update the terraform.tfvars file with your specific AWS region, instance types, and database credentials.
 
-Bootstrap the Database:
+3. Bootstrap the Database
 Execute the initial SQL schemas located in /backend/src/main/resources/schema.sql against your target PostgreSQL instance.
 
 Infrastructure Setup
@@ -165,15 +166,12 @@ Application Metrics: The Spring Boot Actuator endpoint exposes system metrics (C
 Troubleshooting (SRE Case Studies)
 1. Client-Side Build-Time Environment Variable Ingestion
 Issue: The frontend React application threw net::ERR_CONNECTION_REFUSED errors, attempting to call localhost:8080 instead of the AWS Load Balancer. The .env file was correctly isolated via .gitignore, causing the Vite build engine to default to local endpoints.
-
 Fix: Integrated dynamic variable-injection inside the Jenkinsfile. The pipeline builds a localized .env.production file containing the ALB URL directly in the build workspace, forcing Vite to bake the dynamic cloud DNS into the production JavaScript bundles.
 
 2. Resolving Non-Interactive Database Automation Blocks
 Issue: PostgreSQL bootstrap automation scripts stalled indefinitely during pipeline execution because the psql interface paused for manual password entry inside a non-interactive CI/CD shell.
-
 Fix: Programmatically exported the PGPASSWORD environment variable within a scoped Linux subshell immediately before executing database seed routines, achieving successful zero-touch data tier bootstrapping.
 
 3. Mitigating Database Migration Constraint Locks
 Issue: Backend instances failed to initialize during CI/CD rollouts because automated Hibernate schema sync hooks collided with active relational database views.
-
 Fix: Transitioned the SPRING_JPA_HIBERNATE_DDL_AUTO variable from update to validate in production profiles, shifting database governance away from dynamic runtime alterations toward deterministic validations.
