@@ -63,19 +63,3 @@ The entire application lifecycle is fully automated using multi-branch Groovy-DS
 6.  **Deterministic Release Execution:** Updates Kubernetes manifests with the distinct immutable build ID, connects to the EKS cluster API, and executes zero-downtime rolling upgrades across active replica pods via `kubectl`.
 
 ---
-
-## 🛠️ Production Engineering & Troubleshooting Logs (SRE Case Studies)
-
-The foundational value of this platform lies in resolving critical distributed system anomalies encountered during migration:
-
-### 🔍 Case Study 1: Resolving Non-Interactive Database Automation Blocks
-*   **The Problem:** The database bootstrap automation scripts stalled indefinitely during pipeline runtime executions because the `psql` interface paused for manual password entry inside a non-interactive CI/CD shell.
-*   **The SRE Resolution:** Isolated the execution context by programmatically exposing the `PGPASSWORD` environment variable within a scoped Linux subshell immediately before executing database seed routines, achieving successful zero-touch data layer bootstrapping.
-
-### 🔍 Case Study 2: Overcoming Client-Side Build-Time Environment Variable Ingestion
-*   **The Problem:** Following an API migration to an AWS Load Balancer, the frontend app continued firing requests to `localhost:8080`, throwing `net::ERR_CONNECTION_REFUSED` errors for web users. Because the `.env` configuration file was excluded via `.gitignore` for data safety, the Vite build engine failed to find variables and defaulted back to local mock endpoints.
-*   **The SRE Resolution:** Integrated an automated variable-injection step inside the Jenkinsfile compilation phase. The pipeline programmatically tokenizes and builds a localized `.env.production` file containing the active AWS Load Balancer URL right before invoking `npm run build`, forcing Vite to bake the dynamic cloud DNS directly into the immutable production JavaScript bundles.
-
-### 🔍 Case Study 3: Mitigating Database Migration Constraint Locks
-*   **The Problem:** During iterative continuous deployment rollouts, backend instances failed to initialize, raising critical database exception errors because automated schema sync hooks collided with active relational database views.
-*   **The SRE Resolution:** Refactored production environment profiles to transition the `SPRING_JPA_HIBERNATE_DDL_AUTO` variable from `update` to `validate`. This shifted database governance away from hazardous, dynamic runtime alterations toward deterministic, schema-migration validations.
