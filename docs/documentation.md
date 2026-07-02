@@ -1,6 +1,3 @@
-You can copy this entire block and paste it directly into your documentation.md file:
-
-Markdown
 # Instamart: Highly Available 3-Tier Enterprise DevSecOps Architecture
 
 ## Project Overview
