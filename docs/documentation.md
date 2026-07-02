@@ -47,11 +47,11 @@ flowchart TB
         end
     end
 
-    User == 1. Fetch UI ==> Frontend
-    User == 2. API Requests ==> ALB
-    ALB == 3. Route Traffic ==> Backend
-    Backend == 4. Read/Write Data ==> Database
-    ECR -. 5. Pull Image .-> Backend
+    User == "1. Fetch UI" ==> Frontend
+    User == "2. API Requests" ==> ALB
+    ALB == "3. Route Traffic" ==> Backend
+    Backend == "4. Read/Write Data" ==> Database
+    ECR -. "5. Pull Image" .-> Backend
 Technologies Used
 Cloud Provider: AWS (VPC, ALB, EC2, S3, RDS, EKS, IAM, ECR)
 
