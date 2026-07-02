@@ -52,7 +52,8 @@ flowchart TB
     ALB == "3. Route Traffic" ==> Backend
     Backend == "4. Read/Write Data" ==> Database
     ECR -. "5. Pull Image" .-> Backend
-Technologies Used
+
+``` ##Technologies Used
 Cloud Provider: AWS (VPC, ALB, EC2, S3, RDS, EKS, IAM, ECR)
 
 Infrastructure as Code: Terraform
