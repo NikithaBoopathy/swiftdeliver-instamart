@@ -1,0 +1,22 @@
+1. Stopped postgres container
+docker ps
+docker stop 75119e8e063a
+
+2. Started the localhost postgres
+  sudo systemctl start postgresql
+
+3. Executed the db_setup.sql using the postgres user
+ sudo -u postgres psql < db_setup.sql
+
+4. check 5432 using below comand
+ sudo ss -tulpn | grep 5432
+
+5. Alter password of postgresql to postgres
+sudo -u postgres psql
+ALTER USER postgres WITH PASSWORD 'postgres';
+\q
+
+6. Build the spring boot application
+ cd instamart-backend/
+ ls -lrt
+ mvn clean spring-boot:run

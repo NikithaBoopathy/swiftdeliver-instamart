@@ -1,0 +1,105 @@
+#setup_devsecops.yml
+---
+- name: Bootstrap DevSecOps Server
+  hosts: aws_ec2 #dynamic
+  become: yes
+  tasks:
+    #1. Java and Docker
+    - name: Update apt cache
+      apt: 
+       update_cache: yes
+    - name: Install Java 21 and dependencies
+      apt:
+       name: 
+        - fontconfig
+        - openjdk-21-jre
+        - apt-transport-https
+        - gnupg
+        - lsb-release
+       state: present
+    - name: Download and Install Docker
+      shell: curl -fsSL https://get.docker.com | sh
+      args:
+        creates: /usr/bin/docker
+    
+    - name: Ensure docker group exists
+      group:
+        name: docker
+        state: present
+          
+    - name: Add Ubuntu user to docker group
+      user:
+       name: ubuntu
+       groups: docker
+       append: yes
+    
+    #2.Install Jenkins 
+    # - name: Add Jenkins GPG Key
+    #  get_url:
+    #    url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+    #    dest: /usr/share/keyrings/jenkins-keyring.asc
+
+         #- name: Add Jenkins APT Repository
+         #apt_repository:
+         #repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+         #state: present
+    - name: Purge ALL orphaned Jenkins repository files (The Real-World Fix)
+      shell: rm -f /etc/apt/sources.list.d/*jenkins*.list /etc/apt/sources.list.d/pkg_jenkins*.list
+
+        #- name: Remove broken legacy Jenkins repository list
+        #file:
+        #path: /etc/apt/sources.list.d/jenkins.list
+        #state: absent
+    - name: Download Jenkins GPG key securely
+      get_url:
+       url: https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
+       dest: /etc/apt/keyrings/jenkins-keyring.asc
+       mode: '0644'
+
+
+    - name: Add Jenkins APT Repository (Modern Standard)
+      apt_repository:
+       repo: "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+       state: present
+       filename: jenkins
+
+    - name: Update apt cache
+      apt:
+       update_cache: yes
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+        update_cache: yes
+
+    - name: Ensure Jenkins is started and enabled on boot
+      systemd:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    #3.SonarQube Installation through docker
+    - name: Run SonarQube Container
+      shell: docker run -d --name sonarqube -p 9000:9000 --restart always sonarqube:lts-community
+      args:
+        # This prevents Ansible from trying to run a second container if one is already alive
+        creates: /var/lib/docker/containers/*sonarqube* 
+      ignore_errors: yes # Ignores the error if the container name already exists
+    
+    #4. Trivy Installation       
+    - name: Add Trivy GPG Key
+      get_url:
+        url: https://aquasecurity.github.io/trivy-repo/deb/public.key
+        dest: /usr/share/keyrings/trivy.asc
+
+    - name: Add Trivy APT Repository
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/trivy.asc] https://aquasecurity.github.io/trivy-repo/deb generic main"
+        state: present
+
+    - name: Install Trivy
+      apt:
+        name: trivy
+        state: present
+        update_cache: yes

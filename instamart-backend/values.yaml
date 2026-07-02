@@ -1,0 +1,21 @@
+# -- Image Configuration
+image:
+  repository: 397920213006.dkr.ecr.us-east-1.amazonaws.com/instamart-backend
+  tag: "v3"
+  pullPolicy: Always
+
+# -- Application Variables
+app:
+  frontendUrl: "http://instamart-frontend-nikitha-2026.s3-website-us-east-1.amazonaws.com"
+
+# -- Service Configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+# -- Ingress Configuration
+ingress:
+  enabled: true
+  className: "alb"
+  path: /api
