@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: instamart-backend
+ labels:
+  app: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+     containers:
+     - name: backend
+       image: 397920213006.dkr.ecr.us-east-1.amazonaws.com/instamart-backend:v3
+       ports:
+       - containerPort: 8080
+         name: http
+       env:
+        - name: DB_HOST
+          value: instamart-dev-db.cqvsg8qagr5f.us-east-1.rds.amazonaws.com   
+        #RDS later
+        - name: SPRING_PROFILES_ACTIVE
+          value: "dev"
+            ###FE URL    
+        - name: FRONTEND_URL
+          value: "http://instamart-frontend-nikitha-2026.s3-website-us-east-1.amazonaws.com"    
+       # --- THE SPRING BOOT STANDARD OVERRIDE ---
+        - name: DB_USERNAME
+          value: postgres
+        - name: DB_PASSWORD
+          value: postgres
+        - name: DB_NAME
+          value: instamartdev

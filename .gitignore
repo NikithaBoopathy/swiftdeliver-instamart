@@ -14,12 +14,10 @@ dist/
 .terraform.lock.hcl
 
 
-instamart-eks/
-.terraform/providers/registry.terraform.io/hashicorp/aws/6.52.0/linux_amd64/terraform-provider-aws_v6.52.0_x5
+instamart-eks/.terraform/providers/registry.terraform.io/hashicorp/aws/6.52.0/linux_amd64/terraform-provider-aws_v6.52.0_x5
 
 #k8
-k8s/
-deployment.yaml_secrets
-deployment.yaml_probe
-service.yaml_LBService
-deployment.yaml_working
+k8s/deployment.yaml_secrets
+k8s/deployment.yaml_probe
+k8s/service.yaml_LBService
+k8s/deployment.yaml_working
